@@ -4,6 +4,7 @@ import org.springframework.beans.BeanUtil;
 import org.springframework.beans.factory.BeansException;
 import org.springframework.beans.factory.PropertyValue;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanReference;
 
 public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFactory {
 
@@ -34,6 +35,12 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             for (PropertyValue property : beanDefinition.getPropertyValues().getPropertyValues())  {
                 String name = property.getName();
                 Object value = property.getValue();
+
+                if (value instanceof BeanReference) {
+                    BeanReference ref = (BeanReference) value;
+                    value = getBean(ref.getBeanName());
+                }
+
                 BeanUtil.setFieldsValue(bean, name, value);
             }
         } catch (Exception e) {
