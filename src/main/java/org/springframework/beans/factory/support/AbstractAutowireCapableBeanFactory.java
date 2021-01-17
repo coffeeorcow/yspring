@@ -1,6 +1,8 @@
 package org.springframework.beans.factory.support;
 
+import org.springframework.beans.BeanUtil;
 import org.springframework.beans.factory.BeansException;
+import org.springframework.beans.factory.PropertyValue;
 import org.springframework.beans.factory.config.BeanDefinition;
 
 public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFactory {
@@ -16,12 +18,27 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         Object bean;
         try {
             bean = createBeanInstance(beanDefinition);
+
+            // 为 bean 填充属性
+            applyPropertyValues(beanName, bean, beanDefinition);
         } catch (Exception e) {
             throw new BeansException("bean 创建异常");
         }
 
         addSingleton(beanName, bean);
         return bean;
+    }
+
+    private void applyPropertyValues(String beanName, Object bean, BeanDefinition beanDefinition) {
+        try {
+            for (PropertyValue property : beanDefinition.getPropertyValues().getPropertyValues())  {
+                String name = property.getName();
+                Object value = property.getValue();
+                BeanUtil.setFieldsValue(bean, name, value);
+            }
+        } catch (Exception e) {
+            throw new BeansException("Error setting property values for bean: " + beanName);
+        }
     }
 
     protected Object createBeanInstance(BeanDefinition beanDefinition) {
