@@ -1,4 +1,4 @@
-package org.springframework.beans.factory.test.ioc.service;
+package org.springframework.test.ioc.service;
 
 public class HelloService {
     public String sayHello() {

@@ -1,4 +1,4 @@
-package org.springframework.beans.factory.test.ioc;
+package org.springframework.test.ioc;
 
 import org.junit.Test;
 import org.springframework.core.io.DefaultResourceLoader;

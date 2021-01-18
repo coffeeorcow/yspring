@@ -1,9 +1,9 @@
-package org.springframework.beans.factory.test.ioc;
+package org.springframework.test.ioc;
 
 import org.junit.Test;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.beans.factory.test.ioc.service.HelloService;
+import org.springframework.test.ioc.service.HelloService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
