@@ -2,9 +2,7 @@ package org.springframework.beans.factory.xml;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.XmlUtil;
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeansException;
-import org.springframework.beans.factory.PropertyValue;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinitionReader;
@@ -28,6 +26,8 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
     public static final String CLASS_ATTRIBUTE = "class";
     public static final String VALUE_ATTRIBUTE = "value";
     public static final String REF_ATTRIBUTE = "ref";
+    public static final String INIT_METHOD_ATTRIBUTE = "init-method";
+    public static final String DESTROY_METHOD_ATTRIBUTE = "destroy-method";
 
     public XmlBeanDefinitionReader(BeanDefinitionRegistry registry) {
         super(registry);
@@ -70,6 +70,8 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
                 String id = bean.getAttribute(ID_ATTRIBUTE);
                 String name = bean.getAttribute(NAME_ATTRIBUTE);
                 String className = bean.getAttribute(CLASS_ATTRIBUTE);
+                String initMethodName = bean.getAttribute(INIT_METHOD_ATTRIBUTE);
+                String destroyMethodName = bean.getAttribute(DESTROY_METHOD_ATTRIBUTE);
 
                 // 加载类
                 Class<?> clz;
@@ -86,6 +88,9 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
                 }
 
                 BeanDefinition beanDefinition = new BeanDefinition(clz);
+                beanDefinition.setInitMethodName(initMethodName);
+                beanDefinition.setDestroyMethodName(destroyMethodName);
+
                 // 组装 bean属性
                 for (int j = 0; j < node.getChildNodes().getLength(); j++) {
                     Node prop = node.getChildNodes().item(j);
