@@ -3,10 +3,15 @@ package org.springframework.beans.factory.support;
 import org.springframework.beans.BeanUtil;
 import org.springframework.beans.factory.BeansException;
 import org.springframework.beans.factory.PropertyValue;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.BeanReference;
 
-public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFactory {
+import java.util.List;
+
+public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFactory
+        implements AutowireCapableBeanFactory {
 
     private InstantiationStrategy instantiationStrategy = new SimpleInstantiationStrategy();
 
@@ -22,6 +27,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
             // 为 bean 填充属性
             applyPropertyValues(beanName, bean, beanDefinition);
+
+            // 调用 bean 的初始化方法
+            initializeBean(beanName, bean, beanDefinition);
         } catch (Exception e) {
             throw new BeansException("bean 创建异常");
         }
@@ -30,9 +38,21 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         return bean;
     }
 
+    protected Object initializeBean(String beanName, Object bean, BeanDefinition beanDefinition) {
+        // bean 前置处理
+        Object wrappedBean = applyBeanPostProcessorsBeforeInitialization(bean, beanName);
+
+        // 调用 bean 的初始化方法
+        invokeInitMethods(beanName, bean, beanDefinition);
+
+        // bean 后置处理
+        wrappedBean = applyBeanPostProcessorsAfterInitialization(bean, beanName);
+        return wrappedBean;
+    }
+
     private void applyPropertyValues(String beanName, Object bean, BeanDefinition beanDefinition) {
         try {
-            for (PropertyValue property : beanDefinition.getPropertyValues().getPropertyValues())  {
+            for (PropertyValue property : beanDefinition.getPropertyValues().getPropertyValues()) {
                 String name = property.getName();
                 Object value = property.getValue();
 
@@ -56,4 +76,36 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     public InstantiationStrategy getInstantiationStrategy() {
         return instantiationStrategy;
     }
+
+    @Override
+    public Object applyBeanPostProcessorsBeforeInitialization(Object existingBean, String beanName)
+            throws BeansException {
+        Object result = existingBean;
+        for (BeanPostProcessor processor : getBeanPostProcessors()) {
+            Object current = processor.postProcessBeforeInitialization(result, beanName);
+            if (current == null) {
+                return result;
+            }
+            result = current;
+        }
+        return result;
+    }
+
+    @Override
+    public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, String beanName) throws BeansException {
+        Object result = existingBean;
+        for (BeanPostProcessor processor : getBeanPostProcessors()) {
+            Object current = processor.postProcessAfterInitialization(result, beanName);
+            if (current == null) {
+                return result;
+            }
+            result = current;
+        }
+        return result;
+    }
+
+    protected void invokeInitMethods(String beanName, Object bean, BeanDefinition beanDefinition) {
+        System.out.println("执行bean[" + beanName + "]的初始化方法");
+    }
+
 }
