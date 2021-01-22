@@ -1,6 +1,7 @@
 package org.springframework.context.support;
 
 import org.springframework.beans.factory.BeansException;
+import org.springframework.context.ApplicationEvent;
 
 public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContext {
 

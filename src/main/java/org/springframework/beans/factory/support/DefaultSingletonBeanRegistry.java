@@ -18,7 +18,7 @@ public abstract class DefaultSingletonBeanRegistry implements SingletonBeanRegis
         return singletonBeanMap.get(beanName);
     }
 
-    protected void addSingleton(String beanName, Object singletonBean) {
+    public void addSingleton(String beanName, Object singletonBean) {
         singletonBeanMap.put(beanName, singletonBean);
     }
 
@@ -37,5 +37,7 @@ public abstract class DefaultSingletonBeanRegistry implements SingletonBeanRegis
             }
         }
     }
+
+
 
 }
