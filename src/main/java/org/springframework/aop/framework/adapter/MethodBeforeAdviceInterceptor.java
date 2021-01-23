@@ -6,15 +6,21 @@ import org.springframework.aop.aspectj.MethodBeforeAdvice;
 
 public class MethodBeforeAdviceInterceptor implements MethodInterceptor {
 
-    private MethodBeforeAdvice beforeAdvice;
+    private MethodBeforeAdvice advice;
 
-    public MethodBeforeAdviceInterceptor(MethodBeforeAdvice beforeAdvice) {
-        this.beforeAdvice = beforeAdvice;
+    public MethodBeforeAdviceInterceptor() {}
+
+    public MethodBeforeAdviceInterceptor(MethodBeforeAdvice advice) {
+        this.advice = advice;
     }
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
-        beforeAdvice.before(invocation.getMethod(), invocation.getArguments(), invocation.getThis());
+        advice.before(invocation.getMethod(), invocation.getArguments(), invocation.getThis());
         return invocation.proceed();
+    }
+
+    public void setAdvice(MethodBeforeAdvice advice) {
+        this.advice = advice;
     }
 }
